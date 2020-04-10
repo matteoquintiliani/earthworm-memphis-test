@@ -1,0 +1,19 @@
+#!/usr/bin/csh -f
+
+foreach bbsta (`cat HHlist.txt`)
+  foreach chan (HHZ HHN HHE)
+    cp Generic.CMG40TDM24.PZ $bbsta.$chan.NM.PZ.sac
+    cp Generic.CMG40TDM24.PZ $bbsta.$chan.NM.00.PZ.sac
+  end
+end
+foreach smsta (`cat HNlist.txt`)
+  foreach chan (HNZ HNN HNE)
+    cp Generic.CMG5TD.PZ $smsta.$chan.NM.PZ.sac
+    cp Generic.CMG5TD.PZ $smsta.$chan.NM.00.PZ.sac
+  end
+end
+foreach spsta (`cat EHlist.txt`)
+  foreach chan (EHZ EHN EHE)
+    cp Generic.ISIS.SHORT.PZ $spsta.$chan.NM.00.PZ.sac
+  end
+end

@@ -1,0 +1,155 @@
+August 25, 2011
+
+Earthworm Run Test for SCNL (tested using Earthworm v7.5)
+
+        This Earthworm run test has been used on Solaris, Linux, Windows, and
+        MacOSX and is an actual earthquake run from tankplayer. Mitch Withers
+        of CERI at the University of Memphis has kindly supplied this example
+        event. This is an update of an earlier Memphis test that only did an
+        event. This test, runs tankplayer with SendLate set so that you can
+        also compute a subnet trigger and it runs localmag to compute a
+        magnitude!
+
+HOWTO RUN THE EVENT
+
+Step 1. edit the params/ew_* to reflect
+        where you installed the memphis directory
+        (* = your platform, ie ew_sol_sparc.cmd for Solaris
+         on the Sparc platform, or ew_nt.cmd for Windows
+         or ew_macosx.bash for Mac OSX.)
+
+Step 2. source or execute the file.
+
+        On Linux:
+                source ew_linux.bash
+        On Solaris (use tcsh or csh not bash):
+                source ew_sol_sparc.cmd
+        On Windows:
+                ew_nt.cmd
+        On MacOSX:
+                ew_macosx.sh
+
+Step 3. If you ONLY want to test hypoinverse, edit params/tankplayer.d and #
+comment out the line that starts with SendLate
+
+Step 4. run startstop.
+        and let it run till tankplayer ends, then type quit to stop earthworm
+        (You may see various warnings, like eqcoda: "No ClipCount parameter for
+        SFTN EHZ NM --; default (2048) will be used." or "20110824_UTC_18:06:05
+        Unsuccessful read of 8 bytes, at offset 0 in tnk/structp1000-1.str" --
+        you can ignore these.)
+
+
+Step 5. IF you commented out SendLate in Step 3, then review the hyp2000_mgr
+log file, you should get an event line that looks something like this line
+below:
+
+20060907 1351 12.73 36 16.78  89 29.71  11.71 E 3.31 10 163 19.  0.11  0.5  1.0 BW        104
+        or
+20060907 1351 12.73 36 16.78  89 29.71  11.74 E 3.31 10 163 19.  0.11  0.5  1.0 BW        116
+
+        Note that the last number is the event id and will be different
+        depending on how many times you run the event. The 11.7x number is the
+        depth, and varies with different platforms/compilers. The hundredths
+        digit is insignificant and a variation there isn't ok.
+
+        What does this mean?
+        20060907 - YYYYMMDD - Year Month Day
+        1351 12.73 - HHMM SS.SS - Hour Minute Second
+        36 16.78 - Latitude
+        89 29.71 - Longitude
+        11.71 - Depth in km <- slight variations by compiler
+        E - Magnitude Label
+        3.31 - Magnitude - this is MD or Coda magnitude, good only to
+        magnitudes of 3 or 4. Hypoinverse doesn’t have access to the response
+        files, and can’t do better.
+        Use Localmag with your response files for > ML mag 4
+        10 is the number of stations reporting phases
+        163 is the AZIMUTHAL GAP
+        19. is the distance to the closest station in km (from the earthquake
+        hypocenter)
+        0.11 is the RMS residual in seconds
+        0.5 horizontal error in km
+        1.0 vertical error in km
+        B - is a quality assignment
+        W - is for identifying the source of a solution
+        104 is the QUAKE ID from binder (this will change with each run)
+
+        If you get a different result and you definitely commented out
+        SendLate, you may be using an older version of earthworm, hypoinverse,
+        or have adjusted something improperly. Let the earthworm developers
+        know.
+
+        If you commented out SendLate, you're done with the test now at Step 5.
+
+Step 6. If you do not comment out SendLate, then you will have an event
+relative to the time on your computer when you run the test. Review the
+hyp2000_mgr log file.
+
+        Your result may look like the following, though obviously your date and
+        time may be as different from these lines as they are with SendLate
+
+20110824 1735 13.29 36 16.78  89 29.71  11.71 E 3.31 10 163 19.  0.11  0.5  1.0 BW        237
+        or
+20110822 1806 24.21 36 16.78  89 29.71  11.74 E 3.31 10 163 19.  0.11  0.5  1.0 BW        239
+
+        If you get a different number of stations reporting and a different
+        azimuthal gap it's possible to get a result that looks like this:
+
+20110824 1551 49.25 36 16.43  89 30.20   2.78 E 3.28  9 159 19.  0.07  0.4  9.1
+CW        235
+
+        Run the test again, and see if you can get results more like the first
+        set in Step 6. If your machine is busy, for example, your results could
+        vary.
+
+
+Step 7. When running tankplayer in SendLate mode, you will get a carlsubnet
+trigger message that looks like this:
+
+v2.0 EVENT DETECTED     20110817 18:23:02.00 UTC EVENT ID: 51 AUTHOR: 033053004
+
+Sta/Cmp/Net/loc   Date   Time                       start save       duration
+in sec.
+---------------   ------ ---------------
+-----------------------------------------
+ BRGM * NM -- P 20110817 18:22:49.00 UTC  save: 20110817 18:22:47.00      87
+ CWPT * NM -- P 20110817 18:22:49.00 UTC  save: 20110817 18:22:47.00      87
+ DLAR * NM -- P 20110817 18:22:55.00 UTC  save: 20110817 18:22:47.00      87
+ EBZ * NM -- P 20110817 18:23:04.00 UTC  save: 20110817 18:22:47.00      87
+ GLST * NM -- P 20110817 18:22:47.00 UTC  save: 20110817 18:22:47.00      87
+ GNAR * NM -- P 20110817 18:23:14.00 UTC  save: 20110817 18:22:47.00      87
+ LVAR * NM -- P 20110817 18:22:57.00 UTC  save: 20110817 18:22:47.00      87
+ MLNT * NM -- P 00000000 00:00:00.00 UTC save: 20110817 18:22:47.00      87
+ MPH * NM -- P 20110817 18:23:05.00 UTC  save: 20110817 18:22:47.00      87
+ PWLA * NM -- P 20110817 18:23:14.00 UTC  save: 20110817 18:22:47.00      87
+ QUAR * NM -- P 20110817 18:23:04.00 UTC  save: 20110817 18:22:47.00      87
+ RELT * NM -- P 20110817 18:22:50.00 UTC  save: 20110817 18:22:47.00      87
+ SFTN * NM -- P 20110817 18:23:02.00 UTC  save: 20110817 18:22:47.00      87
+ TUMT * NM -- P 20110817 18:23:06.00 UTC  save: 20110817 18:22:47.00      87
+ TWAR * NM -- P 20110817 18:23:07.00 UTC  save: 20110817 18:22:47.00      87
+ WADM * NM -- P 20110817 18:22:49.00 UTC  save: 20110817 18:22:47.00      87
+
+        Note that the Time and start save times will reflect your computer's
+        time, and that the 'duration in sec' can vary somewhat, 87 or 90 for
+        example. The important thing is to see that the event was detected, and
+        to see the list of stations on the left. You will not see this message
+        if you didn't have SendLate turned on in tankplayer since carlsubtrig
+        works only in near real time (and not historical data).
+
+Step 6. For the Localmag magnitude you will see a message at the end of the
+logfile that should look like this:
+
+Magnitude message:
+225 MAG 1 ML 3.82 MED 3 6 0.12 1.00 -1.00 -1 000000000:028055004 1 0
+GNAR.HHE.NM 3.79 58.61 0.00 -9.23E+00 1313600836.44     -1.00  9.11E+00 1313600836.06     -1.00
+GNAR.HHN.NM 3.84 58.61 0.00 -8.26E+00 1313600829.69     -1.00  1.22E+01 1313600829.86     -1.00
+SFTN.EH1.NM 3.94 112.69 0.00 -6.34E+00 1313600832.13     -1.00  7.81E+00 1313600832.38     -1.00
+SFTN.EH2.NM 4.05 112.69 0.00 -1.21E+01 1313600822.77     -1.00  6.06E+00 1313600822.92     -1.00
+PWLA.EHE.NM 3.70 193.91 0.00 -2.09E+00 1313600846.09     -1.00  1.80E+00 1313600846.31     -1.00
+PWLA.EHN.NM 3.81 193.91 0.00 -2.68E+00 1313600844.97     -1.00  2.35E+00 1313600844.77     -1.00
+
+        The important line to compare to your run is the first one, the others
+        may all vary slightly. The '225' value on the first line may change,
+        and on different machines you may get a different value for the
+        '000000000' shown on the first line.
